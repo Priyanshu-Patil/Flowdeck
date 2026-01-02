@@ -15,7 +15,7 @@ const prisma = new PrismaClient({
   },
 });
 
-app.use(express());
+app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
