@@ -1,9 +1,4 @@
-require('dotenv/config');
-
+/** @type {import('prisma').PrismaConfig} */
 module.exports = {
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
+  schema: "./prisma/schema.prisma",
 };
