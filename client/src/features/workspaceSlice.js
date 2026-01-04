@@ -1,9 +1,20 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { dummyWorkspaces } from "../assets/assets";
+import api from "../configs/api";
+
+export const fetchWorkspaces = createAsyncThunk('workspace/fetchWorkspaces', async ({getToken}) => {
+    try {
+        const {data} = await api.get('/api/workspaces', {headers: {Authorization: `Bearer ${await getToken()}`}})
+        return data.workspaces || []
+    } catch (error) {
+        console.log(error?.response?.data?.message || error.message)
+        return []  // <- ensure we always return an array on error
+    }
+})
 
 const initialState = {
-    workspaces: dummyWorkspaces || [],
-    currentWorkspace: dummyWorkspaces[1],
+    workspaces: [],
+    currentWorkspace: null,
     loading: false,
 };
 
@@ -103,6 +114,31 @@ const workspaceSlice = createSlice({
             );
         }
 
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchWorkspaces.pending, (state) => {
+            state.loading = true
+        });
+
+        builder.addCase(fetchWorkspaces.fulfilled, (state, action) => {
+            const workspaces = action.payload || [];
+            state.workspaces = workspaces;
+            if (workspaces.length > 0) {
+                const localStorageCurrentWorkspaceId = localStorage.getItem('currentWorkspaceId');
+                if (localStorageCurrentWorkspaceId) {
+                    const findWorkspace = workspaces.find((w) => w.id === localStorageCurrentWorkspaceId);
+                    state.currentWorkspace = findWorkspace || workspaces[0];
+                } else {
+                    state.currentWorkspace = workspaces[0];
+                }
+            }
+
+            state.loading = false;
+        });
+
+        builder.addCase(fetchWorkspaces.rejected, (state) => {
+            state.loading = false
+        });
     }
 });
 
