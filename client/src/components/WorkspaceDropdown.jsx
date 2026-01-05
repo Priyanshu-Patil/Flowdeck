@@ -58,7 +58,7 @@ function WorkspaceDropdown() {
                         </p>
                     </div>
                 </div>
-                <ChevronDown className="w-4 h-4 text-gray-500 dark:text-zinc-400 flex-shrink-0" />
+                <ChevronDown className="w-4 h-4 text-gray-500 dark:text-zinc-400 shrink-0" />
             </button>
 
             {isOpen && (
@@ -79,7 +79,7 @@ function WorkspaceDropdown() {
                                     </p>
                                 </div>
                                 {currentWorkspace?.id === organization.id && (
-                                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                    <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                                 )}
                             </div>
                         ))}
