@@ -11,6 +11,10 @@ export const addComment = async (req, res) => {
             where: {id: taskId},
         })
 
+        if (!task) {
+            return res.status(404).json({message: "Task not found"})
+        }
+
         const project = await prisma.project.findUnique({
             where: {id: task.projectId},
             include: {members: {include: {user: true}}}
@@ -20,7 +24,7 @@ export const addComment = async (req, res) => {
             return res.status(404).json({message: "Project not found"})
         }
 
-        const member = project.member.find((member) => member.userId === userId)
+        const member = project.members.find((member) => member.userId === userId)
 
         if (!member) {
             return res.status(403).json({message: "You are not a member of this project"});

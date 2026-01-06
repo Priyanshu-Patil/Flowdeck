@@ -97,13 +97,19 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
     try {
         const {userId} = await req.auth();
-        const {taskIds} = await req.body
-        const tasks = await prisma.task.findMany({
-            where: {id: {in: taskIds}}
-        })
+        // Support both `taskIds` and `taskId` (array) from client
+        const body = req.body || {};
+        const taskIds = body.taskIds || body.taskId || [];
 
-        if (task.length === 0) {
-            return res.status(404).json({message: "Task not found"})
+        // Ensure taskIds is an array
+        const ids = Array.isArray(taskIds) ? taskIds : [taskIds];
+
+        const tasks = await prisma.task.findMany({
+            where: { id: { in: ids } }
+        });
+
+        if (!tasks || tasks.length === 0) {
+            return res.status(404).json({ message: "Task not found" });
         }
 
         // Check if user had admin role for project
@@ -118,8 +124,9 @@ export const deleteTask = async (req, res) => {
             return res.status(403).json({message: "You don't have admin priviliges for this project"});
         }
 
-        await prisma.task.delete({
-            where: {id: {in: taskIds}}
+        // Use deleteMany for bulk deletion
+        await prisma.task.deleteMany({
+            where: { id: { in: ids } }
         })
 
         res.json({message: "Task deleted successfully"})
