@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { format } from "date-fns";
+import { useAuth } from "@clerk/clerk-react"
+import api from "../configs/api";
+import toast from "react-hot-toast";
+import { addTask } from "../features/workspaceSlice";
 
 export default function CreateTaskDialog({ showCreateTask, setShowCreateTask, projectId }) {
+    const {getToken} = useAuth();
+    const dispatch = useDispatch();
+
     const currentWorkspace = useSelector((state) => state.workspace?.currentWorkspace || null);
     const project = currentWorkspace?.projects.find((p) => p.id === projectId);
     const teamMembers = project?.members || [];
@@ -21,7 +28,26 @@ export default function CreateTaskDialog({ showCreateTask, setShowCreateTask, pr
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setIsSubmitting(true)
+        try {
+            const {data} = await api.post('/api/tasks', {...formData, workspaceId: currentWorkspace.id, projectId}, {headers: {Authorization: `Bearer ${await getToken()}`}})
+            setShowCreateTask(false)
+            setFormData({
+                title: "",
+                description: "",
+                type: "TASK",
+                status: "TODO",
+                priority: "MEDIUM",
+                assigneeId: "",
+                due_date: "",
+            })
+            toast.success(data.message)
+            dispatch(addTask(data.task))
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message);
+        } finally {
+            setIsSubmitting(false)
+        }
 
     };
 
@@ -109,7 +135,7 @@ export default function CreateTaskDialog({ showCreateTask, setShowCreateTask, pr
                         <button type="button" onClick={() => setShowCreateTask(false)} className="rounded border border-zinc-300 dark:border-zinc-700 px-5 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition" >
                             Cancel
                         </button>
-                        <button type="submit" disabled={isSubmitting} className="rounded px-5 py-2 text-sm bg-gradient-to-br from-blue-500 to-blue-600 hover:opacity-90 text-white dark:text-zinc-200 transition" >
+                        <button type="submit" disabled={isSubmitting} className="rounded px-5 py-2 text-sm bg-linear-to-br from-blue-500 to-blue-600 hover:opacity-90 text-white dark:text-zinc-200 transition" >
                             {isSubmitting ? "Creating..." : "Create Task"}
                         </button>
                     </div>
