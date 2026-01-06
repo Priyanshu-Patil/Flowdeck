@@ -5,10 +5,11 @@ import { clerkMiddleware } from '@clerk/express'
 import { PrismaClient } from '@prisma/client';
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js"
-import workspaceRouter from "./routes/workspaceRoutes.js"
 import { protect } from './middlewares/authMiddlewares.js';
+import workspaceRouter from "./routes/workspaceRoutes.js"
 import projectRouter from './routes/projectsRoutes.js';
 import taskRouter from './routes/taskRoutes.js';
+import commentRouter from './routes/commentRoutes.js';
 
 const app = express();
 const prisma = new PrismaClient({
@@ -29,6 +30,7 @@ app.get('/', (req, res) => res.send("Server is live..."));
 app.use("/api/workspaces", protect, workspaceRouter)
 app.use("/api/projects", protect, projectRouter)
 app.use("/api/task", protect, taskRouter)
+app.use("/api/comments", protect, commentRouter)
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
