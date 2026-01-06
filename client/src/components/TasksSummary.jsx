@@ -2,23 +2,56 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Clock, AlertTriangle, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 export default function TasksSummary() {
 
     const { currentWorkspace } = useSelector((state) => state.workspace);
     const {user} = useUser();
+    const navigate = useNavigate();
     const [tasks, setTasks] = useState([]);
 
     // Get all tasks for all projects in current workspace
     useEffect(() => {
         if (currentWorkspace) {
-            setTasks(currentWorkspace.projects.flatMap((project) => project.tasks));
+            // Map tasks with their projectId
+            const tasksWithProject = currentWorkspace.projects.flatMap((project) => 
+                project.tasks.map(task => ({ ...task, projectId: project.id }))
+            );
+            setTasks(tasksWithProject);
         }
     }, [currentWorkspace]);
 
-    const myTasks = tasks.filter(i => i.assigneeId === user.id);
-    const overdueTasks = tasks.filter(t => t.due_date && new Date(t.due_date) < new Date() && t.status !== 'DONE');
+    // Helper function to check if a date is overdue (compare dates at start of day)
+    const isOverdue = (dueDate) => {
+        if (!dueDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+        return due < today;
+    };
+
+    const myTasks = tasks.filter(i => i.assigneeId === user?.id);
+    const overdueTasks = tasks.filter(t => isOverdue(t.due_date) && t.status !== 'DONE');
     const inProgressIssues = tasks.filter(i => i.status === 'IN_PROGRESS');
+
+    const handleTaskClick = (task) => {
+        if (task.projectId && task.id) {
+            navigate(`/taskDetails?projectId=${task.projectId}&taskId=${task.id}`);
+        }
+    };
+
+    const handleViewMore = (card) => {
+        // Navigate to projects page with appropriate filter
+        if (card.title === "My Tasks") {
+            navigate('/projects');
+        } else if (card.title === "Overdue") {
+            navigate('/projects');
+        } else if (card.title === "In Progress") {
+            navigate('/projects');
+        }
+    };
 
     const summaryCards = [
         {
@@ -69,7 +102,11 @@ export default function TasksSummary() {
                         ) : (
                             <div className="space-y-3">
                                 {card.items.map((issue) => (
-                                    <div key={issue.id} className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
+                                    <div 
+                                        key={issue.id} 
+                                        onClick={() => handleTaskClick(issue)}
+                                        className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                                    >
                                         <h4 className="text-sm font-medium text-gray-800 dark:text-white truncate">
                                             {issue.title}
                                         </h4>
@@ -79,7 +116,10 @@ export default function TasksSummary() {
                                     </div>
                                 ))}
                                 {card.count > 3 && (
-                                    <button className="flex items-center justify-center w-full text-sm text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-white mt-2">
+                                    <button 
+                                        onClick={() => handleViewMore(card)}
+                                        className="flex items-center justify-center w-full text-sm text-gray-500 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-white mt-2 transition-colors"
+                                    >
                                         View {card.count - 3} more <ArrowRight className="w-3 h-3 ml-2" />
                                     </button>
                                 )}
