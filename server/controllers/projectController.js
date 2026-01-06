@@ -64,7 +64,7 @@ export const createProject = async (req, res) => {
     if (team_members?.length > 0) {
       const membersToAdd = [];
       workspace.members.forEach((member) => {
-        if (team_members.include(member.user.email)) {
+        if (team_members.includes(member.user.email)) {
           membersToAdd.push(member.user.id);
         }
       });
@@ -148,13 +148,13 @@ export const updateProject = async (req, res) => {
 export const addMember = async (req, res) => {
   try {
     const {userId} = await req.auth();
-    const {projectId} = await req.params;
-    const {email} = req.body;
+    const { projectId } = req.params;
+    const { email } = req.body;
 
     // Check if user is project lead
     const project = await prisma.project.findUnique({
-        where: {id: projectId},
-        include: {member: {include: {user: true}}}
+      where: {id: projectId},
+      include: {members: {include: {user: true}}}
     })
 
     if (!project) {
@@ -162,11 +162,11 @@ export const addMember = async (req, res) => {
     }
 
     if (project.team_lead !== userId) {
-        return res.status(404).json({message: "Only project lead can add member"});
+      return res.status(403).json({message: "Only project lead can add member"});
     }
 
     // Check is user is already a member
-    const existingMember = project.members.find((member) => member.email === email)
+    const existingMember = project.members.find((member) => member.user?.email === email)
 
     if (existingMember) {
         return res.status(400).json({message: "User is already a member"})
@@ -178,10 +178,10 @@ export const addMember = async (req, res) => {
     }
 
     const member = await prisma.projectMember.create({
-        data: {
-            userId: user.Id,
-            projectId
-        }
+      data: {
+        userId: user.id,
+        projectId,
+      },
     })
 
     res.json({member, message: "Member added successfully"})
