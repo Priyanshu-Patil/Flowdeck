@@ -478,12 +478,6 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](client/LICENSE.md) file for details.
-
----
-
 ## 🙏 Acknowledgments
 
 - **Clerk** for authentication and user management
