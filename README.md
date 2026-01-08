@@ -133,11 +133,6 @@ Flowdeck addresses these challenges by providing:
 - **Why it's used**: React provides a component-based architecture, making it easy to build reusable UI components and manage complex state. Version 19 includes performance improvements and better developer experience.
 - **Role in Flowdeck**: Powers the entire frontend interface, enabling dynamic, interactive user experiences.
 
-#### **Vite 7.1.2**
-- **What it is**: A next-generation frontend build tool and development server
-- **Why it's used**: Vite offers lightning-fast hot module replacement (HMR) during development and optimized production builds. It's significantly faster than traditional bundlers like Webpack.
-- **Role in Flowdeck**: Provides the build system, development server, and production bundling for the React application.
-
 #### **TailwindCSS 4.1.12**
 - **What it is**: A utility-first CSS framework
 - **Why it's used**: TailwindCSS allows rapid UI development with utility classes, eliminating the need for custom CSS files. It's highly customizable and results in smaller production CSS bundles.
@@ -168,20 +163,10 @@ Flowdeck addresses these challenges by providing:
 - **Why it's used**: Recharts provides beautiful, responsive charts with minimal configuration. It's built specifically for React, making integration seamless.
 - **Role in Flowdeck**: Powers the analytics and reporting features, displaying project progress, task distribution, and other visual data representations.
 
-#### **Lucide React 0.540.0**
-- **What it is**: A beautiful, consistent icon library
-- **Why it's used**: Provides a comprehensive set of customizable icons that are lightweight and tree-shakeable. Icons are consistent in style and easy to use.
-- **Role in Flowdeck**: Used throughout the UI for icons (navigation, buttons, status indicators, etc.).
-
 #### **React Hot Toast 2.6.0**
 - **What it is**: A toast notification library for React
 - **Why it's used**: Provides beautiful, customizable toast notifications with smooth animations. Better UX than browser alerts.
 - **Role in Flowdeck**: Displays success, error, and info messages for user actions (creating projects, updating tasks, etc.).
-
-#### **date-fns 4.1.0**
-- **What it is**: A modern JavaScript date utility library
-- **Why it's used**: Provides simple, consistent functions for formatting, parsing, and manipulating dates. Lightweight and modular.
-- **Role in Flowdeck**: Formats dates for display (due dates, creation dates, calendar views) and handles date calculations.
 
 ### Backend Technologies
 
@@ -218,16 +203,6 @@ Flowdeck addresses these challenges by providing:
 - **What it is**: A module for Node.js to send emails easily
 - **Why it's used**: Provides a simple API for sending emails through SMTP servers. Supports HTML emails and attachments.
 - **Role in Flowdeck**: Sends email notifications to users when tasks are assigned or when reminders are due. Uses Brevo (formerly Sendinblue) SMTP service.
-
-#### **CORS 2.8.5**
-- **What it is**: A Node.js package for providing Express middleware to enable CORS (Cross-Origin Resource Sharing)
-- **Why it's used**: Allows the frontend (running on a different port/domain) to make requests to the backend API. Essential for development and production deployments.
-- **Role in Flowdeck**: Enables the React frontend to communicate with the Express backend API.
-
-#### **dotenv 17.2.3**
-- **What it is**: A module that loads environment variables from a `.env` file
-- **Why it's used**: Securely manages configuration and secrets without hardcoding them in the application code.
-- **Role in Flowdeck**: Loads database URLs, API keys, SMTP credentials, and other environment-specific configuration.
 
 #### **WebSocket (ws) 8.18.3**
 - **What it is**: A WebSocket library for Node.js
@@ -500,12 +475,6 @@ Contributions are welcome! Please follow these steps:
 - Use meaningful variable and function names
 - Add comments for complex logic
 - Write clean, maintainable code
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](client/LICENSE.md) file for details.
 
 ---
 
